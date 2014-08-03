@@ -2,28 +2,9 @@
 #define LOCKING_HXX
 
 /**
- * helper class to ensure correct locking and unlocking of
- * the lock placed on a target
- */
-template <typename Lock> class LockGuard
-{
-    Lock &mLock;
-
-public:
-    LockGuard(Lock &l)
-        : mLock( l )
-    {
-        l.lock();
-    }
-    
-    ~LockGuard()
-    {
-        mLock.unlock();
-    }
-};
-
-/**
  * empty lock type doing no locking at all
+ * Use this lock in situations, where only a single thread will access the logger
+ * and you want to save the extra effort of locking a mutex.
  */
 struct NullLock
 {

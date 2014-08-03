@@ -5,12 +5,20 @@
 #include <map>
 #include <memory>
 
+/**
+ * The two trace levels. Those two messages are optimized out in
+ * release code.
+ */
 enum TraceLevel
 {
     LEVEL_TRACE,
     LEVEL_DEBUG
 };
 
+/**
+ * Log levels. Messages with those levels will never be optimized out,
+ * even in release code.
+ */
 enum LogLevel
 {
     LEVEL_INFO = LEVEL_DEBUG + 1,
@@ -27,6 +35,12 @@ enum LogLevel
 
 /**
  * Log sentry object guarding start and finish of a log message
+ * 
+ * \param Target The log target to forward the messages to.
+ * \param outputEnabled Define whether this sentry outputs anything at all. The
+ *                      specialization of this class for <tt>outputEnabled == false</tt>
+ *                      is an empty shell for being optimized out.
+ * \param LoggerType The type of the logger that created this sentry.
  */
 template <
     typename Target,
@@ -74,12 +88,6 @@ template <
     
 public:
     
-    /**
-     * delete the copy constructor
-     */
-    //LogSentry(LogSentry const &) = delete;
-    
-    //LogSentry &operator=(LogSentry const &) = delete;
     
     ~LogSentry()
     {
@@ -88,6 +96,11 @@ public:
         }
     }
 
+    /**
+     * Output a value to the logger.
+     * 
+     * \param v The value to output.
+     */
     template <typename ValueT> inline LogSentry &operator<<(ValueT const &v)
     {
         if (mEnabled) {
@@ -98,6 +111,8 @@ public:
 
     /**
      * enable output like "<< std::endl" etc.
+     * 
+     * \param manip The output manipulator to be output to the target.
      */
     LogSentry &operator<<(std::basic_ostream<typename LoggerType::TargetTraitsType::char_type, 
                                              typename LoggerType::TargetTraitsType::char_traits_type> &(*manip)(
@@ -167,6 +182,10 @@ template <
     
     /**
      * constructor for child loggers
+     * 
+     * \param name the name of this log object
+     * \param parent the parent of this object
+     * \param level the initial minimum message of this logger
      */
     Logger(std::string const &name, std::shared_ptr<Target> &t, Logger *parent, unsigned char level)
         : mName(name), mTarget(t), mParent(parent), mLevel(level)
@@ -201,7 +220,11 @@ public:
     }
     
     /**
-     * starte a new log message
+     * Start a new log message.
+     * 
+     * \param ll The log level of this message.
+     * \return A LogSentry-object forwarding the rest of the message to the log target
+     *          (depending on the message level)
      */
     inline LogSentry<Target, true, Logger> operator<<(LogLevel ll)
     {
@@ -211,7 +234,12 @@ public:
     } 
 
     /**
-     * start a new trace message
+     * Start a new trace message. Depending on you compilation configuration
+     * this call will be optimized away (with tracing disabled).
+     * 
+     * \param tl The trace level of this message.
+     * \return A LogSentry-object forwarding the rest of the message to the log target
+     *          (depending on the message level)
      */
     inline LogSentry<Target, trace, Logger> operator<<(TraceLevel tl)
     {
@@ -220,26 +248,35 @@ public:
                          Logger>(*mTarget, *this, tl, tl >= mLevel);
     } 
     
+    /**
+     * Get the name of this logger.
+     * 
+     * \return The name of this logger relative to its parent.
+     */
     inline std::string const &name() const
     {
         return mName;
     }
     
-    std::string canonicalName() const
-    {
-        if (mParent && mParent->name().size() > 0) {
-            return mParent->canonicalName()+"."+mName;
-        }
-        else {
-            return mName;
-        }
-    }
-    
+    /**
+     * Return the parent logger of this object (if any).
+     * 
+     * \return The parent logger of this object or nullptr, if this is a
+     *          root logger.
+     */
     Logger *parent() const
     {
         return mParent;
     }
     
+    /**
+     * Set the minimum log level of this object. Messages have to at least have this
+     * level to be forwarded to the log target. This call will <em>also set the levels
+     * of all child-loggers!</em>
+     * 
+     * \param level The log level to set must be one of the values from TraceLevel or
+     *              LogLevel.
+     */
     void setLevel(unsigned char level)
     {
         mLevel = level;
@@ -248,6 +285,18 @@ public:
         }
     }
     
+    /**
+     * Get a child logger of the current logger. This method will return a
+     * logger object with the same configuration as the object this is called on
+     * apart from the name and the parent and child loggers (obviously). If no child
+     * logger with this name already exists, a new object is created and stored
+     * as a child of this logger.
+     * 
+     * \param name The name of this sub-logger. If a logger with this name does already exist,
+     *             the object is returned. The name cannot be empty.
+     * \return A logger object with the given name and the same configuration as the
+     *          parent logger.
+     */
     std::shared_ptr<Logger> child(std::string const &name)
     {
         if (name.size() == 0) {
