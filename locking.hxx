@@ -28,20 +28,22 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-/**
- * empty lock type doing no locking at all
- * Use this lock in situations, where only a single thread will access the logger
- * and you want to save the extra effort of locking a mutex.
- */
-struct NullLock
+namespace Logging
 {
-    void lock()
+    /**
+    * empty lock type doing no locking at all
+    * Use this lock in situations, where only a single thread will access the logger
+    * and you want to save the extra effort of locking a mutex.
+    */
+    struct NullLock
     {
-    }
-    
-    void unlock()
-    {
-    }
-};
-
+        void lock()
+        {
+        }
+        
+        void unlock()
+        {
+        }
+    };
+}
 #endif // LOCKING_HXX
