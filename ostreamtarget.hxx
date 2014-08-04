@@ -96,6 +96,23 @@ namespace Logging
             }
             mOs << '[' << levelName(tl) << "] ";
         }
+
+        /**
+        * Start a message from the given logger with the given level.
+        * 
+        * \param source the logger object, which starts the message.
+        * \param ll the level of this message
+        * \note This method calls LockType::lock(). It might therefore block until the lock is available.
+        */
+        template <typename LoggerType> void startMessage(LoggerType const &source, LogLevel tl)
+        {
+            LockType::lock();
+            std::string const &logName = canonicalName(source);
+            if (logName.size() > 0) {
+                mOs << '(' << logName << ") ";
+            }
+            mOs << '[' << levelName(tl) << "] ";
+        }        
         
         /**
         * finish a message from the given source.
