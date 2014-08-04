@@ -178,11 +178,24 @@ namespace Logging {
         
     public:
 
+        /**
+         * output anything. This method is just an empty shell to be optimized away.
+         */
         template <typename ValueT> inline LogSentry &operator<<(ValueT const &)
         {
             return *this;
         }
         
+        /**
+        * enable output like "<< std::endl" etc.
+        */
+        LogSentry &operator<<(std::basic_ostream<typename LoggerType::TargetTraitsType::char_type, 
+                                                typename LoggerType::TargetTraitsType::char_traits_type> &(*)(
+                                                    std::basic_ostream<typename LoggerType::TargetTraitsType::char_type, 
+                                                    typename LoggerType::TargetTraitsType::char_traits_type> &))
+        {
+            return *this;
+        }
     };
 
     /**
@@ -378,7 +391,7 @@ namespace Logging {
     */
     template <typename Target, bool trace, typename TargetTraitsType> inline auto
             operator<<(std::shared_ptr<Logger<Target, trace, TargetTraitsType>> const &l, LogLevel ll) 
-                -> decltype((*l) << l)
+                -> decltype((*l) << ll)
     {
         return (*l) << ll;
     }
