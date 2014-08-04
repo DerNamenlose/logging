@@ -55,11 +55,11 @@ namespace Logging {
         LEVEL_FATAL
     };
 
-    // forward declaration for use in the LogSentry
-    // template <
-    //   typename Target,          // logging target
-    //   bool trace                // tracing enabled?
-    //     > class Logger;
+#ifndef NDEBUG
+#define TRACING false
+#else
+#define TRACING true
+#endif
 
     /**
     * Log sentry object guarding start and finish of a log message
@@ -193,6 +193,22 @@ namespace Logging {
 
     /**
     * Logger class
+    * 
+    * \param Target the type of log target to use. See OStreamTarget for an example.
+    * \param trace indicate, whether tracing is enabled. If this parameter is false, all
+    *              messages with levels TRACE and DEBUG will be compiled in a way, that
+    *              modern compilers will be able to optimize them out. You will need to
+    *              enable optimization in you compilation process (e.g. at least -O for
+    *              GCC or Clang).
+    *              The logging framework will try to define the value of Tracing based on
+    *              whether NDEBUG is set (i.e. we're being compiled in release mode) or
+    *              not. You can therefore use this variable to enable/disable Tracing
+    *              at compilation time like this:
+    *              \code
+    *                   Logging::Logger<TargetType, !TRACING>
+    *              \endcode
+    * \param TargetTraits The traits object defining some necessary information on the
+    *              log target. Defaults to TargetTraits<Target>.
     */
     template <
         typename Target,          // logging target
