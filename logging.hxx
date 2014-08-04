@@ -76,7 +76,7 @@ namespace Logging {
         typename LoggerType
         > class LogSentry
     {
-        friend LoggerType;
+        template <typename TargetType, bool trace, typename TargetTraits> friend class Logger;
         
         Target &mTarget;
         LoggerType const &mSource;
