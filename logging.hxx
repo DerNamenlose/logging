@@ -163,7 +163,7 @@ namespace Logging {
         typename LoggerType
         > class LogSentry<Target, false, LoggerType>
     {
-        friend LoggerType;
+        template <typename TargetType, bool trace, typename TargetTraits> friend class Logger;
         
         /**
         * constructor for starting a log message with a trace level
