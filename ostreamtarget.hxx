@@ -87,7 +87,13 @@ namespace Logging
                 mOs << "<" << buf;
                 if (mPrintTime) {
                     auto millis = std::chrono::duration_cast<std::chrono::milliseconds>(time.time_since_epoch()).count() % 1000; // millisecond part of the equation
+                    auto w = mOs.width();
+                    auto f = mOs.fill();
+                    mOs.width(3);
+                    mOs.fill('0');
                     mOs << "." << millis;
+                    mOs.width(w);
+                    mOs.fill(f);
                 }
                 mOs << "> ";
             }
