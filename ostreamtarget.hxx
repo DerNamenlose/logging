@@ -83,7 +83,7 @@ namespace Logging
                 else {
                     fmt = "%T";
                 }
-                std::strftime(buf, 128, "%F %T", std::localtime(&tp));
+                std::strftime(buf, 128, fmt, std::localtime(&tp));
                 mOs << "<" << buf;
                 if (mPrintTime) {
                     auto millis = std::chrono::duration_cast<std::chrono::milliseconds>(time.time_since_epoch()).count() % 1000; // millisecond part of the equation
