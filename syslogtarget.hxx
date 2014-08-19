@@ -7,10 +7,11 @@
 
 #include "logging.hxx"
 #include "logging_utils.hxx"
+#include "locking.hxx"
 
 namespace Logging
 {
-    template <typename LockType> class SyslogTarget : public LockType
+    template <typename LockType = NullLock> class SyslogTarget : public LockType
     {
         int mOption;
         int mFacility;
