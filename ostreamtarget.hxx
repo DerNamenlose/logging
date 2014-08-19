@@ -129,6 +129,7 @@ namespace Logging
         {
             LockType::lock();
             std::string const &logName = canonicalName(source);
+            printTimestamp();
             if (logName.size() > 0) {
                 mOs << '(' << logName << ") ";
             }
