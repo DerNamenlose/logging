@@ -29,7 +29,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include <ostream>
-
+#include <chrono>
+#include <ctime>
 #include <string>
 
 #include "logging.hxx"
@@ -61,6 +62,36 @@ namespace Logging
         : public LockType
     {
         OStreamT &mOs;
+        bool mPrintTime;
+        bool mPrintDate;
+        
+        void printTimestamp()
+        {
+            if (mPrintDate || mPrintTime) {
+                auto time = std::chrono::system_clock::now();
+                auto tp = std::chrono::system_clock::to_time_t(time);
+                char buf[128];
+                char const *fmt;
+                if (mPrintDate) {
+                    if (mPrintTime) {
+                        fmt = "%F %T";
+                    }
+                    else {
+                        fmt = "%F";
+                    }
+                }
+                else {
+                    fmt = "%T";
+                }
+                std::strftime(buf, 128, "%F %T", std::localtime(&tp));
+                mOs << "<" << buf;
+                if (mPrintTime) {
+                    auto millis = std::chrono::duration_cast<std::chrono::milliseconds>(time.time_since_epoch()).count() % 1000; // millisecond part of the equation
+                    mOs << "." << millis;
+                }
+                mOs << "> ";
+            }
+        }
         
     public:
         
@@ -76,7 +107,7 @@ namespace Logging
         *           as long, as the OStreamTarget-object it is wrapped by.
         */
         OStreamTarget(OStreamT &os)
-            : mOs ( os )
+            : mOs ( os ), mPrintTime( false ), mPrintDate ( false)
         {
         }
         
@@ -108,6 +139,7 @@ namespace Logging
         {
             LockType::lock();
             std::string const &logName = canonicalName(source);
+            printTimestamp();
             if (logName.size() > 0) {
                 mOs << '(' << logName << ") ";
             }
@@ -142,6 +174,37 @@ namespace Logging
         void put(std::basic_ostream<char>& (*manip)(std::basic_ostream<char>&))
         {
             mOs << manip;
+        }
+        
+        /**
+         * print the time a log message is started
+         * 
+         * \param p enable/disable printing. If true, printing is enabled.
+         */
+        void printTime(bool p)
+        {
+            mPrintTime = p;
+        }
+
+        /**
+         * print the date a log message is started
+         * 
+         * \param p enable/disable printing. If true, printing is enabled.
+         */
+        void printDate(bool p)
+        {
+            mPrintDate = p;
+        }
+        
+        /**
+         * print time and date of a log message
+         * 
+         * \param p enable/disable printing. If true, printing is enabled.
+         */
+        void printTimestamp(bool p)
+        {
+            printTime(p);
+            printDate(p);
         }
     };
 
