@@ -30,5 +30,12 @@ int main()
     child << Logging::LEVEL_INFO << "This messages should never be visible.\n";
     child << Logging::LEVEL_ERROR << "This should be.\n";
 
+    if (!logger->isEnabled(Logging::LEVEL_DEBUG)) {
+    	logger << Logging::LEVEL_INFO << "Release mode. Will not output any trace messages.\n";
+    }
+    else {
+    	logger << Logging::LEVEL_DEBUG << "Debug mode. Will output trace messages.\n";
+    }
+
     return 0;
 }
