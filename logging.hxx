@@ -55,7 +55,7 @@ namespace Logging {
         LEVEL_FATAL
     };
 
-#ifndef NDEBUG
+#ifdef NDEBUG
 #define TRACING false
 #else
 #define TRACING true

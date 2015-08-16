@@ -10,7 +10,7 @@ typedef Logging::OStreamTarget<std::ostream> LogTarget;
 //   the TRACING-flag is derived from the NDEBUG-flag set by many compilers in release mode
 //   It indicates, whether the logger sould output TRACE and DEBUG messages. Used like
 //   here, it disables tracing, when NDEBUG is set on compilation
-typedef Logging::Logger<LogTarget, !TRACING> Logger;
+typedef Logging::Logger<LogTarget, TRACING> Logger;
 
 int main()
 {
