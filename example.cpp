@@ -37,5 +37,12 @@ int main()
     	logger << Logging::LEVEL_DEBUG << "Debug mode. Will output trace messages.\n";
     }
 
+    auto cerrTarget = std::make_shared<LogTarget>(std::cerr);
+    child->setTarget(cerrTarget);
+    child->setLevel(Logging::LEVEL_INFO);
+
+    logger << Logging::LEVEL_INFO << "This should be on cout\n";
+    child << Logging::LEVEL_INFO << "And this on cerr\n";
+
     return 0;
 }

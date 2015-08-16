@@ -404,6 +404,27 @@ namespace Logging {
             }
             return child->second;
         }
+
+        /**
+         * get the target currently associated with this Logger
+         *
+         * \return a shared_ptr to the target object associated with this logger
+         */
+        std::shared_ptr<Target> const &target() const
+        {
+            return mTarget;
+        }
+
+        /**
+         * set the target object associated with this logger <em>and all its children</em>
+         */
+        void setTarget(std::shared_ptr<Target> const &t)
+        {
+            mTarget = t;
+            for (auto &child : mChildren) {
+                child.second->setTarget(t);
+            }
+        }
     };
 
     /**
