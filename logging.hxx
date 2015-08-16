@@ -64,11 +64,11 @@ namespace Logging {
     /**
     * Log sentry object guarding start and finish of a log message
     *
-    * \param Target The log target to forward the messages to.
-    * \param outputEnabled Define whether this sentry outputs anything at all. The
+    * \tparam Target The log target to forward the messages to.
+    * \tparam outputEnabled Define whether this sentry outputs anything at all. The
     *                      specialization of this class for <tt>outputEnabled == false</tt>
     *                      is an empty shell for being optimized out.
-    * \param LoggerType The type of the logger that created this sentry.
+    * \tparam LoggerType The type of the logger that created this sentry.
     */
     template <
         typename Target,
@@ -116,6 +116,7 @@ namespace Logging {
 
     public:
 
+        LogSentry(LogSentry const &) = default;
 
         ~LogSentry()
         {
@@ -168,8 +169,10 @@ namespace Logging {
         /**
         * constructor for starting a log message with a trace level
         *
-        * \internal This class only needs the trace level constructor, as it will never be created with
+        * \internal
+        *            This class only needs the trace level constructor, as it will never be created with
         *            a log level input
+        * \endinternal
         */
         LogSentry(Target &, LoggerType const &, TraceLevel, bool)
         {
@@ -207,8 +210,8 @@ namespace Logging {
     /**
     * Logger class
     *
-    * \param Target the type of log target to use. See OStreamTarget for an example.
-    * \param trace indicate, whether tracing is enabled. If this parameter is false, all
+    * \tparam Target the type of log target to use. See OStreamTarget for an example.
+    * \tparam trace indicate, whether tracing is enabled. If this parameter is false, all
     *              messages with levels TRACE and DEBUG will be compiled in a way, that
     *              modern compilers will be able to optimize them out. You will need to
     *              enable optimization in you compilation process (e.g. at least -O for
@@ -220,7 +223,7 @@ namespace Logging {
     *              \code
     *                   Logging::Logger<TargetType, !TRACING>
     *              \endcode
-    * \param TargetTraits The traits object defining some necessary information on the
+    * \tparam TargetTraits The traits object defining some necessary information on the
     *              log target. Defaults to TargetTraits<Target>.
     */
     template <

@@ -12,8 +12,8 @@ modification, are permitted provided that the following conditions are met:
     * Redistributions in binary form must reproduce the above copyright
       notice, this list of conditions and the following disclaimer in the
       documentation and/or other materials provided with the distribution.
-    * Neither my name nor the names of any contributors may be used to endorse 
-      or promote products derived from this software without specific prior 
+    * Neither my name nor the names of any contributors may be used to endorse
+      or promote products derived from this software without specific prior
       written permission.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
@@ -43,12 +43,12 @@ namespace Logging
     * Logging target wrapping a standard C++ ostream.
     * This target takes a standard C++ ostream and wraps it for use with
     * the Logging framework.
-    * 
-    * \param OStreamT The type of ostream to use (e.g. std::ostream for things like std::cout, 
+    *
+    * \tparam OStreamT The type of ostream to use (e.g. std::ostream for things like std::cout,
     *                                                  std::wostream for std::wcout etc.)
-    * \param LockType The type of Lock adapter to use. This type must be default-constructible
+    * \tparam LockType The type of Lock adapter to use. This type must be default-constructible
     *                 and provide two functions:
-    * 
+    *
     *                      void lock() - Lock the target object, so that no parallel access takes place.
     *                                      If the lock cannot be aquired, this function must block, until
     *                                      the lock is available.
@@ -64,7 +64,7 @@ namespace Logging
         OStreamT &mOs;
         bool mPrintTime;
         bool mPrintDate;
-        
+
         void printTimestamp()
         {
             if (mPrintDate || mPrintTime) {
@@ -99,16 +99,16 @@ namespace Logging
                 mOs << "> ";
             }
         }
-        
+
     public:
-        
+
         /// The type of output stream wrapped by this object. Used e.g. by TargetTraits
         typedef OStreamT ostream_type;
-        
+
         /**
         * Constructor.
         * This constructs an object wrapping the given std::ostream.
-        * 
+        *
         * \param os The std::ostream to wrap. The target object only wraps a reference to
         *           the given object. The std::ostream therefore <em>MUST</em> exist at least
         *           as long, as the OStreamTarget-object it is wrapped by.
@@ -117,10 +117,10 @@ namespace Logging
             : mOs ( os ), mPrintTime( false ), mPrintDate ( false)
         {
         }
-        
+
         /**
         * Start a message from the given logger with the given level.
-        * 
+        *
         * \param source the logger object, which starts the message.
         * \param tl the level of this message
         * \note This method calls LockType::lock(). It might therefore block until the lock is available.
@@ -138,12 +138,12 @@ namespace Logging
 
         /**
         * Start a message from the given logger with the given level.
-        * 
+        *
         * \param source the logger object, which starts the message.
         * \param ll the level of this message
         * \note This method calls LockType::lock(). It might therefore block until the lock is available.
         */
-        template <typename LoggerType> void startMessage(LoggerType const &source, LogLevel tl)
+        template <typename LoggerType> void startMessage(LoggerType const &source, LogLevel ll)
         {
             LockType::lock();
             std::string const &logName = canonicalName(source);
@@ -151,9 +151,9 @@ namespace Logging
             if (logName.size() > 0) {
                 mOs << '(' << logName << ") ";
             }
-            mOs << '[' << levelName(tl) << "] ";
-        }        
-        
+            mOs << '[' << levelName(ll) << "] ";
+        }
+
         /**
         * finish a message from the given source.
         * \note calls LockType::unlock(), releasing the target for other accesses.
@@ -162,10 +162,10 @@ namespace Logging
         {
             LockType::unlock();
         }
-        
+
         /**
         * output a value to the underlying stream.
-        * 
+        *
         * \param v The value. This method has the same effect as <tt>os << v</tt> (with os being the underlying
         *          std::ostream.
         */
@@ -173,20 +173,20 @@ namespace Logging
         {
             mOs << v;
         }
-        
+
         /**
         * Output stuff like std::endl to the underlying stream.
-        * 
+        *
         * \param manip The manipulator to output to the underlying stream.
         */
         void put(std::basic_ostream<char>& (*manip)(std::basic_ostream<char>&))
         {
             mOs << manip;
         }
-        
+
         /**
          * print the time a log message is started
-         * 
+         *
          * \param p enable/disable printing. If true, printing is enabled.
          */
         void printTime(bool p)
@@ -196,17 +196,17 @@ namespace Logging
 
         /**
          * print the date a log message is started
-         * 
+         *
          * \param p enable/disable printing. If true, printing is enabled.
          */
         void printDate(bool p)
         {
             mPrintDate = p;
         }
-        
+
         /**
          * print time and date of a log message
-         * 
+         *
          * \param p enable/disable printing. If true, printing is enabled.
          */
         void printTimestamp(bool p)

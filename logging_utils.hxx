@@ -12,8 +12,8 @@ modification, are permitted provided that the following conditions are met:
     * Redistributions in binary form must reproduce the above copyright
       notice, this list of conditions and the following disclaimer in the
       documentation and/or other materials provided with the distribution.
-    * Neither my name nor the names of any contributors may be used to endorse 
-      or promote products derived from this software without specific prior 
+    * Neither my name nor the names of any contributors may be used to endorse
+      or promote products derived from this software without specific prior
       written permission.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
@@ -34,11 +34,11 @@ namespace Logging
 {
     /**
     * Return a string representation of the given trace level
-    * 
+    *
     * \param tl The trace level to transform.
     * \return The string representation of the given trace level.
     */
-    inline char const * const levelName(TraceLevel tl)
+    inline char const *levelName(TraceLevel tl)
     {
         if (tl == LEVEL_TRACE) {
             return "TRACE";
@@ -50,11 +50,11 @@ namespace Logging
 
     /**
     * Return a string representation of the given log level
-    * 
+    *
     * \param ll The log level to transform.
     * \return The string representation of the given log level.
     */
-    inline char const * const levelName(LogLevel ll)
+    inline char const *levelName(LogLevel ll)
     {
         switch (ll) {
             case LEVEL_INFO:
@@ -69,17 +69,17 @@ namespace Logging
             case LEVEL_FATAL:
                 return "FATAL";
                 break;
-            default:
+/*            default:
                 return "UNKNOWN";
-                break;
+                break;*/
         }
     }
 
-        
+
     /**
     * Get the full name of a logger. The canonical name consists of the
     * full chain up to the root logger separated by the given separator.
-    * 
+    *
     * \param l The logger to return the canonical name on.
     * \param separator The separator to join the canonical name parts with.
     * \return The full canonical name of the logger
